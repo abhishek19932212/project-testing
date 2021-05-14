@@ -183,7 +183,7 @@ Resources:
     Properties:
       VpcId: !Ref MainVPC
       PeerVpcId: !Ref QA1VPC
-# RDS Database Clone in different VPC using Snapshot
+#RDS Database Clone in different VPC using Snapshot
   QA1DBSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     DependsOn: QA1VPC
@@ -254,7 +254,7 @@ Resources:
           ToPort: 8080
           CidrIp: 0.0.0.0/0
       GroupDescription: Security Group for demo server
-      VpcId: !Ref VPC
+      VpcId: !Ref QA1VPC
   EC2InstanceQA1Svr:
     Type: 'AWS::EC2::Instance'
     DependsOn: SecurityGroupDemoSvrTraffic
@@ -433,7 +433,7 @@ Resources:
           CidrIp: 0.0.0.0/0
           Description: For traffic from Internet
       GroupDescription: Security Group for demo server
-      VpcId: !Ref VPC
+      VpcId: !Ref QA1VPC
   appQA1ALB:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
     DependsOn: albSecurityGroup
@@ -493,7 +493,7 @@ Resources:
       Matcher:
         HttpCode: '200'
       HealthyThresholdCount: 5
-      VpcId: !Ref VPC
+      VpcId: !Ref QA1VPC
       Name: target-group-1
       HealthCheckEnabled: true
       Targets:
@@ -591,7 +591,7 @@ Resources:
       Matcher:
         HttpCode: '200'
       HealthyThresholdCount: 5
-      VpcId: !Ref VPC
+      VpcId: !Ref QA1VPC
       Name: target-group-2
       HealthCheckEnabled: true
       Targets:
@@ -631,8 +631,14 @@ Resources:
     Properties:
       ResourceArn: 
         !Sub
-          - arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:loadbalancer/${TargetALB}
-          - TargetALB: !GetAtt apiQA1ALB.LoadBalancerFullName
-          - arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:loadbalancer/${TargetALB}
-          - TargetALB: !GetAtt appQA1ALB.LoadBalancerFullName
+         - arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:loadbalancer/${TargetALB}
+         - TargetALB: !GetAtt apiQA1ALB.LoadBalancerFullName
+      WebACLArn: arn:aws:wafv2:us-west-2:162022628823:regional/webacl/demo1waf/846e3dbc-7a89-419c-9694-74df546db90c
+  wafALBAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: 
+        !Sub
+         - arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:loadbalancer/${TargetALB}
+         - TargetALB: !GetAtt appQA1ALB.LoadBalancerFullName
       WebACLArn: arn:aws:wafv2:us-west-2:162022628823:regional/webacl/demo1waf/846e3dbc-7a89-419c-9694-74df546db90c
