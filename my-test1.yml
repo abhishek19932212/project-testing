@@ -454,7 +454,7 @@ Resources:
       Protocol: HTTPS
       SslPolicy: ELBSecurityPolicy-2016-08
       Certificates:
-        - CertificateArn: arn:aws:acm:us-west-2:771519632284:certificate/038bd83f-bc1c-4de1-aa32-fab783c64bfe
+        - CertificateArn: arn:aws:acm:us-west-2:162022628823:certificate/bc97d00b-51a1-4187-8d84-2abfb63b6388
       DefaultActions:
         - Order: 1
           TargetGroupArn: !Ref appTargetGroup
